@@ -66,9 +66,9 @@ function Login() {
     setShowPassword(!showPassword);
   };
   return (
-    <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-6 lg:px-4">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+   
+      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-6 lg:px-4 adata"  >
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm"  style={{width:'100%'}}>
           {/* Your logo and title */}
           <img
             className="mx-auto h-8 w-auto"
@@ -187,7 +187,7 @@ function Login() {
           </p>
         </div>
       </div>
-    </>
+  
   );
 }
 

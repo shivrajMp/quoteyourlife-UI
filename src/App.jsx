@@ -204,6 +204,7 @@ function App() {
                     <button
                       onClick={() => handleItemClick("login")}
                       type="submit"
+                      style={{margin:'0'}}
                       class="flex justify-center items-center m-0 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600  mt-2"
                     >
                       Login
@@ -283,23 +284,30 @@ function App() {
                 (data || []).map((quote) => (
                   <div>
                     {/* <img src={"person.avatar"} alt="" className="h-5 w-5 flex-shrink-0 rounded-full" /> */}
-                    <span className="h-5 w-5 flex-shrink-0 rounded-full"><svg class="h-5 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></span>
-                   
-                    <p className="text-gray-500 ">
-                   
-                   
-                      {` ${quote?.username}`}
-                    </p>
-                    <p className="text-gray-500 ">
-                      {`( ${
+                    <div style={{ display: "flex" ,marginBottom:'5px',columnGap:'5px'}}>
+                      <span className="mb-2 w-10 flex-shrink-0 rounded-full " style={{display:'flex',justifyContent:'center' ,alignItems:'center', border:'2px solid'}}>
+                        <img
+                          className="h-8 w-8"
+                          src={`${process.env.PUBLIC_URL}/cabbage.png`}
+                          alt="Your Company"
+                        />
+                      </span>
+                      <span >
+                        <p className="font-medium ">{`${quote?.username}`}</p>
+                        <span style={{ display: "flex" ,columnGap:'10px'}}>{quote?.quote_category}   <p className="text-gray-500 ">{formatDateDifference(quote?.created_at)}</p></span> 
+                      
+                      </span>
+                    </div>
+                    {/* <p className="text-gray-500 ">
+                      {`${
                         quote?.first_name?.charAt(0)?.toUpperCase() +
                         quote?.first_name?.slice(1)
                       } ${
                         quote?.last_name?.charAt(0).toUpperCase() +
                         quote?.last_name?.slice(1)
-                      } )`}
-                    </p>
-                    {formatDateDifference(quote?.created_at)}
+                      } `}
+                    </p> */}
+
                     <div className="bg-cover border border-gray-300 p-4 px-6 quote-container ">
                       <p
                         style={{ color: "#464f5c" }}
@@ -308,10 +316,8 @@ function App() {
                         " {atob(quote?.quote)} "
                       </p>
 
-                      <div className="flex items-end space-x-2 h-16 justify-between">
-                        <div>
-                          <span>{quote?.quote_category}</span>
-                        </div>
+                      {/* <div className="flex items-end space-x-2 h-16 justify-between">
+                        
                         <span className="flex items-center gap-2">
                           <HeartIcon
                             key={quote?.id}
@@ -322,8 +328,10 @@ function App() {
                           />
                           <span>{quote?.likes}</span>
                         </span>
-                      </div>
+                      </div> */}
+                
                     </div>
+                    <hr class=" h-0.5 mx-auto my-10 bg-gray-50 border-0 rounded md:my-2 mx-10 dark:bg-gray-300"/>
                   </div>
                 ))
               ) : (
@@ -376,10 +384,10 @@ function App() {
                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
-                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg adada w-full" style={{width:'100% '}}>
                   <>
                     {currentdialog === "login" ? (
-                      <Login />
+                      <Login  style={{width:'100% !important'}}/>
                     ) : currentdialog === "register" ? (
                       <Register />
                     ) : null}
