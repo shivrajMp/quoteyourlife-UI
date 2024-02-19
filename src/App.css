@@ -1,38 +1,34 @@
-.App {
-  text-align: center;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+
+@font-face {
+  font-family: "Oswald";
+  src: url("../public/fonts/Oswald-VariableFont_wght.ttf");
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+@media screen and (min-width: 640px) {
+  .custom-font-size {
+    font-size: 2rem; /* Adjust the font size as needed */
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.quote-container {
+  background-image: url('../public/book.jpg'); /* Adjust the path to your image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-family: serif !important;
+    /* font-weight: 600; */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Shadow for the "page" */
+    position: relative;
 }
 
-.App-link {
-  color: #61dafb;
+.book-page {
+  position: relative;
+  border-radius: 10px; /* Adjust border radius as needed */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Shadow for the "page" */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
