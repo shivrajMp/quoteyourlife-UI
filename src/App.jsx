@@ -17,6 +17,7 @@ import Login from "./components/login/login";
 import Register from "./components/register/register";
 import { MyContext } from "./context/context";
 import PostQuote from "./components/postquote/postquote";
+import authService from "./services/authService";
 
 const user = {
   name: "Raj Pattan",
@@ -43,16 +44,18 @@ function App() {
       .then((json) => dispatch(apiSuccess(json)))
       .catch((error) => dispatch(apiError(error)));
   }, [dispatch]);
-  const [open, setOpen] = useState(false);
   const handleItemClick = (itemName) => {
     if (itemName == "login") {
-      setOpen(true);
       updateValue("login");
     }
     // Do something with the item's name
   };
+ 
   const postQuote = () => {
-    updateValue("post");
+    const isAuthenticated = authService.isAuthenticated();
+    console.log(isAuthenticated)
+    updateValue(isAuthenticated ?"post": 'login');
+    
   };
   useEffect(() => {
     console.log(currentdialog, "currentdialog");
@@ -305,12 +308,12 @@ function App() {
           </div>
         </main>
       </div>
-      <Transition.Root show={open} as={Fragment}>
+      <Transition.Root show={!!currentdialog} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-10"
           initialFocus={cancelButtonRef}
-          onClose={setOpen}
+          onClose={updateValue}
         >
           <Transition.Child
             as={Fragment}
