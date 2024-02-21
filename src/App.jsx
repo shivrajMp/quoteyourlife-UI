@@ -7,7 +7,12 @@ import Header from "./components/header/header";
 import Filter from "bad-words";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon, UserIcon} from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  BellIcon,
+  XMarkIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
 import { apiError, apiSuccess, startLoading } from "./statemange/slice";
 import { HeartIcon } from "@heroicons/react/24/outline";
@@ -18,11 +23,14 @@ import Register from "./components/register/register";
 import { MyContext } from "./context/context";
 import PostQuote from "./components/postquote/postquote";
 import authService from "./services/authService";
+import Notification from "./components/notifications/notification";
+import { ToastContainer, toast } from "react-toastify";
+import { resetData } from "./statemange/registerslice";
 
 const user = {
   name: "Raj Pattan",
   email: "rpattan@gmail.com",
-  };
+};
 const userNavigation = [
   { name: "Your Profile", href: "#" },
   { name: "Sign out", href: "#" },
@@ -37,6 +45,38 @@ function App() {
   const dispatch = useDispatch();
   const { loading, data, error } = useSelector((state) => state.api);
   const { currentdialog, updateValue } = useContext(MyContext);
+
+  const { registerloading, registerdata, registererror } = useSelector(
+    (state) => state.register
+  );
+  useEffect(() => {
+    if (registerdata & registerdata?.id) {
+      toast.success("Congratulations! You have successfully registered.", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      updateValue("login");
+    } else {
+      toast.error(registererror, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+    dispatch(resetData());
+  }, [registerdata, registererror]);
+
   useEffect(() => {
     dispatch(startLoading());
     fetch("https://quote-your-life.onrender.com/quotes/list")
@@ -45,17 +85,16 @@ function App() {
       .catch((error) => dispatch(apiError(error)));
   }, [dispatch]);
   const handleItemClick = (itemName) => {
-    if (itemName == "login") {
+    if (itemName === "login") {
       updateValue("login");
     }
     // Do something with the item's name
   };
- 
+
   const postQuote = () => {
     const isAuthenticated = authService.isAuthenticated();
-    console.log(isAuthenticated)
-    updateValue(isAuthenticated ?"post": 'login');
-    
+    console.log(isAuthenticated);
+    updateValue(isAuthenticated ? "post" : "login");
   };
   useEffect(() => {
     console.log(currentdialog, "currentdialog");
@@ -69,6 +108,18 @@ function App() {
   const cancelButtonRef = useRef(null);
   return (
     <>
+       <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div className="min-h-full">
         <Disclosure
           as="nav"
@@ -110,7 +161,7 @@ function App() {
                   </div>
                   <div className="hidden md:block">
                     <div className="ml-4 flex items-center md:ml-6">
-                    <span className="text-white">Username</span>
+                      <span className="text-white">Username</span>
                       {/* <button
                         type="button"
                         className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -126,7 +177,8 @@ function App() {
                           <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                             <span className="absolute -inset-1.5" />
                             <span className="sr-only">Open user menu</span>
-                            <UserIcon className="h-6 w-6 white text-white " /> {/* Adjust the size as needed */}
+                            <UserIcon className="h-6 w-6 white text-white " />{" "}
+                            {/* Adjust the size as needed */}
                           </Menu.Button>
                         </div>
                         <Transition
@@ -340,7 +392,11 @@ function App() {
               >
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                   <>
-                    {currentdialog==='login'? <Login /> : currentdialog==='register'? <Register/>:null}
+                    {currentdialog === "login" ? (
+                      <Login />
+                    ) : currentdialog === "register" ? (
+                      <Register />
+                    ) : null}
                   </>
                   {/* <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
