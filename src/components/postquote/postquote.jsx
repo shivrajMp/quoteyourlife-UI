@@ -5,7 +5,6 @@ function PostQuote() {
   // const [open, setOpen] = useState(true);
   const { currentdialog, updateValue } = useContext(MyContext);
   useEffect(() => {
-    console.log(currentdialog);
   }, [currentdialog]);
   const closeDialog = () => {
     updateValue("");

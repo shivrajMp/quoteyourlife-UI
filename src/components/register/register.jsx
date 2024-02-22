@@ -17,7 +17,9 @@ function Register() {
   
 
   const registerUser = (useInfo) => {
+    dispatch(resetData());
     dispatch(startLoading());
+
     fetch("https://quote-your-life.onrender.com/user/create", {
       method: "POST",
       headers: {
@@ -26,11 +28,10 @@ function Register() {
       body: JSON.stringify(useInfo),
     })
       .then((response) => {
-        console.log(response, "response");
         if (!response.ok) {
           let message = "Server Error";
           if (response.status === 409) {
-            message = "User already exist.";
+            message = "User already registered.";
           }
 
           dispatch(apiError(message));
@@ -39,11 +40,9 @@ function Register() {
         return response.json();
       })
       .then((json) => {
-        console.log(json, "json");
         dispatch(apiSuccess(json));
       })
       .catch((error) => {
-        console.log(error, "errors");
         dispatch(apiError(error));
       })
       .finally(() => {
@@ -87,7 +86,7 @@ function Register() {
   };
   return (
     <>
-      {" "}
+
    
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-6 lg:px-4">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -255,6 +254,7 @@ function Register() {
               href="#"
               className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
               onClick={loginAccountClick}
+              disabled = {registerloading}
             >
               Login
             </a>

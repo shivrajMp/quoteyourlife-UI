@@ -49,33 +49,53 @@ function App() {
   const { registerloading, registerdata, registererror } = useSelector(
     (state) => state.register
   );
+
+  const showError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  const showSuccess = (message) => {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+  const { loginloading, logindata, loginerror } = useSelector(
+    (state) => state.login
+  );
   useEffect(() => {
-    if (registerdata & registerdata?.id) {
-      toast.success("Congratulations! You have successfully registered.", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+    if (registerdata && registerdata?.id) {
+      showSuccess("Congratulations! You have successfully registered.");
       updateValue("login");
+      dispatch(resetData());
     } else {
-      toast.error(registererror, {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      showError(registererror);
     }
-    dispatch(resetData());
-  }, [registerdata, registererror]);
+  }, [dispatch, registerdata, registererror]);
+
+  useEffect(() => {
+    if (logindata && logindata?.token_type) {
+      showSuccess("You have successfully logged in.");
+      updateValue("");
+    } else {
+      showError(loginerror);
+    }
+  }, [logindata, loginerror]);
 
   useEffect(() => {
     dispatch(startLoading());
@@ -108,7 +128,7 @@ function App() {
   const cancelButtonRef = useRef(null);
   return (
     <>
-       <ToastContainer
+      <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}

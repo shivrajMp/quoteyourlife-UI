@@ -3,11 +3,13 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import apiReducer from './slice';
 import registerReducer from './registerslice';
+import loginReducer from './loginslice';
 
 const rootReducer = combineReducers({
   api: apiReducer,
   // profile: profileReducer,
-  register:registerReducer
+  register:registerReducer,
+  login:loginReducer,
   // Add more reducers as needed
 });
 
