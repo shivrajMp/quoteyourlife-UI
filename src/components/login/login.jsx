@@ -12,6 +12,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "react-toastify/dist/ReactToastify.css";
+import authService from "../../services/authService";
 function Login() {
   const loginUser = (useInfo) => {
     dispatch(resetData());
@@ -35,6 +36,8 @@ function Login() {
       })
       .then((data) => {
         if (data?.token_type) {
+          authService.setToken(data?.access_token)
+          authService.setUser(data?.user)
           dispatch(apiSuccess(data));
         }
       })

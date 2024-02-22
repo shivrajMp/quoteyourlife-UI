@@ -3,7 +3,7 @@ import "./App.css";
 import Footer from "./components/footer/footer";
 import { useContext, useEffect, useRef, useState } from "react";
 import Body from "./components/body/body";
-import Header from "./components/header/header";
+// import Footer from "./components/footer/footer";
 import Filter from "bad-words";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
@@ -27,13 +27,10 @@ import Notification from "./components/notifications/notification";
 import { ToastContainer, toast } from "react-toastify";
 import { resetData } from "./statemange/registerslice";
 
-const user = {
-  name: "Raj Pattan",
-  email: "rpattan@gmail.com",
-};
+
 const userNavigation = [
   { name: "Your Profile", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: "Sign out",id:'logout', href: "#" },
   { name: "Login", id: "login", href: "#" },
 ];
 
@@ -108,12 +105,14 @@ function App() {
     if (itemName === "login") {
       updateValue("login");
     }
+    if (itemName === "logout") {
+      authService.logout();
+    }
     // Do something with the item's name
   };
-
+  const userinfo = authService.getUser();
   const postQuote = () => {
     const isAuthenticated = authService.isAuthenticated();
-    console.log(isAuthenticated);
     updateValue(isAuthenticated ? "post" : "login");
   };
   useEffect(() => {
@@ -181,7 +180,7 @@ function App() {
                   </div>
                   <div className="hidden md:block">
                     <div className="ml-4 flex items-center md:ml-6">
-                      <span className="text-white">Username</span>
+                      <span className="text-white">{`${userinfo?.username || ''}`}</span>
                       {/* <button
                         type="button"
                         className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -280,10 +279,10 @@ function App() {
                     </div>
                     <div className="ml-3">
                       <div className="text-base font-medium leading-none text-white">
-                        {user.name}
+                        {userinfo?.firstname}
                       </div>
                       <div className="text-sm font-medium leading-none text-gray-400">
-                        {user.email}
+                        {userinfo?.email}
                       </div>
                     </div>
                     <button
@@ -379,8 +378,9 @@ function App() {
             </div>
           </div>
         </main>
+        <Footer/>
       </div>
-      <Transition.Root show={!!currentdialog} as={Fragment}>
+      <Transition.Root show={["login",'register'].includes(currentdialog)} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-10"
@@ -441,7 +441,6 @@ function App() {
           </div>
         </Dialog>
       </Transition.Root>
-
       <PostQuote />
     </>
   );
