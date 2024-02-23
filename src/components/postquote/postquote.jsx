@@ -9,6 +9,14 @@ function PostQuote() {
   const closeDialog = () => {
     updateValue("");
   };
+  const styles = {
+    container: {
+ 
+      '&:focus-visible': { // Apply styles for :focus-visible
+        outline: 'none !important' ,
+      },
+    }
+  };
   const postQuote = () => {};
   const cancelButtonRef = useRef(null);
   return (
@@ -24,7 +32,7 @@ function PostQuote() {
           className="bg-white p-8 max-w-screen-lg w-full h-full overflow-y-auto"
           style={{
             zIndex: "10000",
-            minHeight: "90vh",
+            minHeight: "20vh",
             minWidth: "90%",
             margin: "10px",
             borderRadius: "8px",
@@ -33,8 +41,9 @@ function PostQuote() {
         >
           <div className="flex flex-col items-end">
             {/* Textarea */}
-            <div className="w-full">
+            <div className="w-full" style={styles.container}>
               <textarea
+              style={styles.container}
                 className="block w-full bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-md resize-none"
                 rows="4"
               ></textarea>
@@ -47,7 +56,7 @@ function PostQuote() {
               // inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto
               class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600  mt-2"
             >
-              close
+              Close
             </button>
             <button
               onClick={postQuote}
