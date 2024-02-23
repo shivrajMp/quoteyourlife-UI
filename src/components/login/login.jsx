@@ -21,7 +21,7 @@ function Login() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...useInfo
+        ...useInfo,
       },
     })
       .then((response) => {
@@ -36,8 +36,8 @@ function Login() {
       })
       .then((data) => {
         if (data?.token_type) {
-          authService.setToken(data?.access_token)
-          authService.setUser(data?.user)
+          authService.setToken(data?.access_token);
+          authService.setUser(data?.user);
           dispatch(apiSuccess(data));
         }
       })
@@ -58,7 +58,6 @@ function Login() {
     updateValue("register");
   };
   const onSubmit = (values) => {
-
     loginUser(values);
   };
   const [showPassword, setShowPassword] = useState(false);
@@ -177,12 +176,13 @@ function Login() {
           />
           <p className="mt-5 text-start text-sm text-gray-500">
             {/* Not a member?{" "} */}
+            Don't have an account? &nbsp;
             <a
               href="#"
               className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
               onClick={createAccountClick}
             >
-              Create Account
+              Register
             </a>
           </p>
         </div>

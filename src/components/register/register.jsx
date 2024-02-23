@@ -249,7 +249,7 @@ function Register() {
             )}
           />
           <p className="mt-5 text-start text-sm text-gray-500">
-            Already user?{" "}
+          Have an account?{" "}
             <a
               href="#"
               className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"

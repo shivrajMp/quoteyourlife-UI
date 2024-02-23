@@ -42,6 +42,7 @@ function classNames(...classes) {
 }
 
 function App() {
+  const [isOpen, setIsOpen] = useState(false);
   const MyInstagramLoader = () => <Instagram />;
   const dispatch = useDispatch();
   const { loading, data, error } = useSelector((state) => state.api);
@@ -121,6 +122,7 @@ function App() {
   };
   useEffect(() => {
     console.log(currentdialog, "currentdialog");
+    setIsOpen(false)
   }, [currentdialog]);
 
   const [liked, setLiked] = useState(false);
@@ -134,6 +136,17 @@ function App() {
       localStorage.clear();
     }
   });
+
+  useEffect(() => {
+    if (!userinfo?.id && currentdialog === "") {
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, []); // Empty dependency array to run effect only once after initial render
+
   const cancelButtonRef = useRef(null);
   return (
     <>
@@ -153,12 +166,12 @@ function App() {
         <Disclosure
           as="nav"
           className="bg-gray-800 z-10"
-          style={{ position: "sticky", top: "0" }}
+          style={{ position: "sticky", top: "0" ,boxShadow:'0 2px 2px gray'}}
         >
           {({ open }) => (
             <>
               <div className="mx-auto max-w- px-4 sm:px-6 lg:px-8">
-                <div className="flex h-16 items-center justify-between">
+                <div className="flex h-12 items-center justify-between">
                   <div className="flex items-center">
                     <div className="flex gap-2 items-center">
                       <img
@@ -249,7 +262,7 @@ function App() {
                     <button
                       onClick={() => handleItemClick("login")}
                       type="submit"
-                      class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600  mt-2"
+                      class="flex justify-center items-center m-0 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600  mt-2"
                     >
                       Login
                     </button>
@@ -323,7 +336,7 @@ function App() {
         </header>
         <main>
           <div className="flex justify-center  min-h-screen">
-            <div className="max-w-md border border-gray-200 rounded-lg p-4 space-y-4 w-full min-w-[50%]">
+            <div className="max-w-md  p-4 space-y-4 w-full min-w-[50%]">
               {data && data.length ? (
                 (data || []).map((quote) => (
                   <div className="bg-cover border border-gray-300 p-4 px-6 quote-container ">
@@ -349,6 +362,7 @@ function App() {
                       </div>
                       <span className="flex items-center gap-2">
                         <HeartIcon
+                          key={quote?.id}
                           className={`h-5 w-5 cursor-pointer transition-transform duration-300 transform ${
                             liked ? "scale-125 text-red-500" : ""
                           }`}
@@ -441,6 +455,62 @@ function App() {
         </Dialog>
       </Transition.Root>
       <PostQuote />
+      {isOpen && (
+        <div className="relative">
+          <div
+            className={`fixed inset-x-0 bottom-0 bg-white z-50 p-4 transition-transform duration-500 transform ${
+              isOpen ? "translate-y-0" : "translate-y-full"
+            }`}
+            style={{
+              boxShadow: isOpen ? " -1px -2px 16px #8a8787d9" : "none",
+              borderTopLeftRadius: "13px",
+              borderTopRightRadius: "13px",
+            }}
+          >
+            {isOpen && (
+              <div className="absolute  left-1/2 transform -translate-x-1/2 -translate-y-12">
+                <div
+                  className="w-16 h-16  border-4 border-white-500  rounded-full flex items-center justify-center"
+                  style={{
+                    background: "#1F2937",
+                    boxShadow: "0px -4px 3px #8a8787d9",
+                  }}
+                >
+                  <img
+                    className="mx-auto h-8 w-auto"
+                    src={`${process.env.PUBLIC_URL}/logo_.png`}
+                    alt="Your Company"
+                  />
+                </div>
+              </div>
+            )}
+            <div className="flex items-center justify-center mt-4">
+              <div className="flex flex-col justify-center  w-full">
+                <p className="text-lg font-medium flex items-center justify-center">
+                  Login to post your own Quotes.
+                </p>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleItemClick("login");
+                  }}
+                  class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600  mt-2"
+                >
+                  Login
+                </button>
+
+                <a
+                  href="#"
+                  className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500 block flex items-center justify-center text-sm mt-3"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Not Now
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
