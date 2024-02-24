@@ -19,6 +19,9 @@ function PostQuote() {
   };
   const postQuote = () => {};
   const cancelButtonRef = useRef(null);
+  const setValue = (event)=>{
+    console.log(event)
+  }
   return (
     <Dialog
       open={currentdialog == "post"}
@@ -46,6 +49,7 @@ function PostQuote() {
               style={styles.container}
                 className="block w-full bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-md resize-none"
                 rows="4"
+                onChange={(event)=>setValue(event)}
               ></textarea>
             </div>
 
