@@ -1,8 +1,9 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { MyContext } from "../../context/context";
+import authService from './../../services/authService';
 function PostQuote() {
-  // const [open, setOpen] = useState(true);
+  const [quote, setQuote] = useState('');
   const { currentdialog, updateValue } = useContext(MyContext);
   useEffect(() => {
   }, [currentdialog]);
@@ -17,10 +18,48 @@ function PostQuote() {
       },
     }
   };
-  const postQuote = () => {};
-  const cancelButtonRef = useRef(null);
+  const postQuote = () => {
+    // dispatch(resetData());
+    // dispatch(startLoading());
+    const useInfo  = authService.getUser()
+    const token  = authService.getToken()
+    fetch("https://quote-your-life.onrender.com/quotes/create", {
+    
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "userId": useInfo?.id,
+        "authorization": 'Bearer'+token
+      },
+      body:{
+        "quote": quote,
+        "quote_category": "MOTIVATIONAL"
+      }
+      
+    })
+      .then((response) => {
+        if (!response?.ok) {
+          let message = "Server Error";
+          if (response.status === 402) {
+            message = "Invalid User.";
+          }
+          // dispatch(apiError(message));
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data)
+      })
+      .catch((error) => {
+        // dispatch(apiError(error?.message || ""));
+      })
+      .finally(() => {
+        // dispatch(stopLoading()); // Set formSubmitting back to false after completing form submission
+      });
+  };
+  // const cancelButtonRef = useRef(null);
   const setValue = (event)=>{
-    console.log(event)
+    setQuote(event?.target?.value || '')
   }
   return (
     <Dialog
