@@ -28,7 +28,7 @@ import authService from "./services/authService";
 import Notification from "./components/notifications/notification";
 import { ToastContainer, toast } from "react-toastify";
 import { resetData } from "./statemange/registerslice";
-
+import { formatDateDifference } from "./features/dateformatter/dateformat";
 import { Avatar } from "@mui/material";
 import UserProfileIcon from "./components/extra/avatar";
 import MessageNotification from "./components/notifications/notification";
@@ -47,6 +47,9 @@ function App() {
   const MyInstagramLoader = () => <Instagram />;
   const dispatch = useDispatch();
   const { loading, data, error } = useSelector((state) => state.api);
+  const { postquoteloading, postquotedata, postquoteerror } = useSelector(
+    (state) => state.login
+  );
   const { currentdialog, updateValue } = useContext(MyContext);
   useEffect(() => {
     dispatch(startLoading());
@@ -278,25 +281,16 @@ function App() {
             <div className="max-w-md  p-4 space-y-4 w-full min-w-[50%]">
               {data && data.length ? (
                 (data || []).map((quote) => (
-                  <div className="bg-cover border border-gray-300 p-4 px-6 quote-container ">
-                    <p
-                      style={{ color: "#464f5c" }}
-                      className="rounded-l    whitespace-pre-wrap text-xl font-oswald text-primary-800  text-xl font-medium text-start leading-relaxed sm:text-3xl custom-gray font-black p-3"
-                    >
-                      " {atob(quote?.quote)} "
-                    </p>
-                    <p className="text-gray-500 mx-2">
-                      -
-                      {/* {` ${
-                        quote?.first_name?.charAt(0)?.toUpperCase() +
-                        quote?.first_name?.slice(1)
-                      } ${
-                        quote?.last_name?.charAt(0).toUpperCase() +
-                        quote?.last_name?.slice(1)
-                      }`} */}
+                  <div>
+                    {/* <img src={"person.avatar"} alt="" className="h-5 w-5 flex-shrink-0 rounded-full" /> */}
+                    <span className="h-5 w-5 flex-shrink-0 rounded-full"><svg class="h-5 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></span>
+                   
+                    <p className="text-gray-500 ">
+                   
+                   
                       {` ${quote?.username}`}
                     </p>
-                    <p className="text-gray-500 mx-2">
+                    <p className="text-gray-500 ">
                       {`( ${
                         quote?.first_name?.charAt(0)?.toUpperCase() +
                         quote?.first_name?.slice(1)
@@ -305,21 +299,30 @@ function App() {
                         quote?.last_name?.slice(1)
                       } )`}
                     </p>
+                    {formatDateDifference(quote?.created_at)}
+                    <div className="bg-cover border border-gray-300 p-4 px-6 quote-container ">
+                      <p
+                        style={{ color: "#464f5c" }}
+                        className="rounded-l    whitespace-pre-wrap text-xl font-oswald text-primary-800  text-xl font-medium text-start leading-relaxed sm:text-3xl custom-gray font-black p-3"
+                      >
+                        " {atob(quote?.quote)} "
+                      </p>
 
-                    <div className="flex items-end space-x-2 h-16 justify-between">
-                      <div>
-                        <span>{quote?.quote_category}</span>
+                      <div className="flex items-end space-x-2 h-16 justify-between">
+                        <div>
+                          <span>{quote?.quote_category}</span>
+                        </div>
+                        <span className="flex items-center gap-2">
+                          <HeartIcon
+                            key={quote?.id}
+                            className={`h-5 w-5 cursor-pointer transition-transform duration-300 transform ${
+                              liked ? "scale-125 text-red-500" : ""
+                            }`}
+                            onClick={handleLikeClick}
+                          />
+                          <span>{quote?.likes}</span>
+                        </span>
                       </div>
-                      <span className="flex items-center gap-2">
-                        <HeartIcon
-                          key={quote?.id}
-                          className={`h-5 w-5 cursor-pointer transition-transform duration-300 transform ${
-                            liked ? "scale-125 text-red-500" : ""
-                          }`}
-                          onClick={handleLikeClick}
-                        />
-                        <span>{quote?.likes}</span>
-                      </span>
                     </div>
                   </div>
                 ))
