@@ -5,7 +5,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const loginReducer = createSlice({
   name: "login",
   initialState: {
-    loginloginloading: false,
+    loginloading: false,
     logindata: null,
     loginerror: null,
   },

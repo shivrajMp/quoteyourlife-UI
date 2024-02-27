@@ -31,6 +31,7 @@ import { resetData } from "./statemange/registerslice";
 
 import { Avatar } from "@mui/material";
 import UserProfileIcon from "./components/extra/avatar";
+import MessageNotification from "./components/notifications/notification";
 const userNavigation = [
   { name: "Your Profile", href: "#" },
   { name: "Sign out", id: "logout", href: "#" },
@@ -47,58 +48,6 @@ function App() {
   const dispatch = useDispatch();
   const { loading, data, error } = useSelector((state) => state.api);
   const { currentdialog, updateValue } = useContext(MyContext);
-
-  const { registerloading, registerdata, registererror } = useSelector(
-    (state) => state.register
-  );
-
-  const showError = (message) => {
-    toast.error(message, {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
-
-  const showSuccess = (message) => {
-    toast.success(message, {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
-  const { loginloading, logindata, loginerror } = useSelector(
-    (state) => state.login
-  );
-  useEffect(() => {
-    if (registerdata && registerdata?.id) {
-      showSuccess("Congratulations! You have successfully registered.");
-      updateValue("login");
-      dispatch(resetData());
-    } else {
-      showError(registererror);
-    }
-  }, [dispatch, registerdata, registererror]);
-
-  useEffect(() => {
-    if (logindata && logindata?.token_type) {
-      showSuccess("You have successfully logged in.");
-      updateValue("");
-    } else {
-      showError(loginerror);
-    }
-  }, [logindata, loginerror]);
-
   useEffect(() => {
     dispatch(startLoading());
     fetch("https://quote-your-life.onrender.com/quotes/list")
@@ -122,7 +71,7 @@ function App() {
   };
   useEffect(() => {
     console.log(currentdialog, "currentdialog");
-    setIsOpen(false)
+    setIsOpen(false);
   }, [currentdialog]);
 
   const [liked, setLiked] = useState(false);
@@ -150,23 +99,13 @@ function App() {
   const cancelButtonRef = useRef(null);
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      <MessageNotification />
+
       <div className="min-h-full">
         <Disclosure
           as="nav"
           className="bg-gray-800 z-10"
-          style={{ position: "sticky", top: "0" ,boxShadow:'0 2px 2px gray'}}
+          style={{ position: "sticky", top: "0", boxShadow: "0 2px 2px gray" }}
         >
           {({ open }) => (
             <>
@@ -348,14 +287,25 @@ function App() {
                     </p>
                     <p className="text-gray-500 mx-2">
                       -
-                      {` ${
+                      {/* {` ${
                         quote?.first_name?.charAt(0)?.toUpperCase() +
                         quote?.first_name?.slice(1)
                       } ${
                         quote?.last_name?.charAt(0).toUpperCase() +
                         quote?.last_name?.slice(1)
-                      }`}
+                      }`} */}
+                      {` ${quote?.username}`}
                     </p>
+                    <p className="text-gray-500 mx-2">
+                      {`( ${
+                        quote?.first_name?.charAt(0)?.toUpperCase() +
+                        quote?.first_name?.slice(1)
+                      } ${
+                        quote?.last_name?.charAt(0).toUpperCase() +
+                        quote?.last_name?.slice(1)
+                      } )`}
+                    </p>
+
                     <div className="flex items-end space-x-2 h-16 justify-between">
                       <div>
                         <span>{quote?.quote_category}</span>
@@ -431,7 +381,6 @@ function App() {
                       <Register />
                     ) : null}
                   </>
-                 
                 </Dialog.Panel>
               </Transition.Child>
             </div>
