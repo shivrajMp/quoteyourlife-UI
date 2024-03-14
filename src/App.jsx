@@ -48,16 +48,21 @@ function App() {
   const dispatch = useDispatch();
   const { loading, data, error } = useSelector((state) => state.api);
   const { postquoteloading, postquotedata, postquoteerror } = useSelector(
-    (state) => state.login
+    (state) => state.postquote
   );
   const { currentdialog, updateValue } = useContext(MyContext);
-  useEffect(() => {
+  const fetchList =()=>{
     dispatch(startLoading());
     fetch("https://quote-your-life.onrender.com/quotes/list")
       .then((response) => response.json())
       .then((json) => dispatch(apiSuccess(json)))
       .catch((error) => dispatch(apiError(error)));
-  }, [dispatch]);
+  }
+  useEffect(() => {
+    fetchList();
+  }, [dispatch,postquotedata]);
+
+  
   const handleItemClick = (itemName) => {
     if (itemName === "login") {
       updateValue("login");

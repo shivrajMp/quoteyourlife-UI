@@ -33,7 +33,7 @@ const postquoteReducer = createSlice({
   },
 });
 
-export const { stopLoading, apiSuccess, apiError, startLoading ,resetData} =
+export const { stopLoading, apiSuccess, apiError, startLoading ,resetData } =
   postquoteReducer.actions;
 
 export default postquoteReducer.reducer;

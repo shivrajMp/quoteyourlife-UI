@@ -4,7 +4,7 @@ export const formatDateDifference = (timestamp) => {
 
   const currentDate = new Date();
   const timeDifference = currentDate.getTime() - localDate.getTime();
-  const secondsDifference = Math.floor(timeDifference / 1000);
+  const secondsDifference = Math.floor(timeDifference / 1000) > 0 ? Math.floor(timeDifference / 1000) : 1;
 
   if (secondsDifference < 60) {
     return `${secondsDifference} seconds ago`;

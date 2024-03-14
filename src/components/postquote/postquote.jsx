@@ -9,7 +9,7 @@ import {
 } from "react";
 import { MyContext } from "../../context/context";
 import authService from "./../../services/authService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   apiError,
   apiSuccess,
@@ -24,6 +24,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 function PostQuote() {
+  const { postquoteloading,} = useSelector(
+    (state) => state.postquote
+  );
   const [quote, setQuote] = useState("");
   const { currentdialog, updateValue, currentNotification, openNotification } =
     useContext(MyContext);
@@ -115,9 +118,10 @@ function PostQuote() {
       <Dialog.Overlay
         className="fixed inset-0 bg-black opacity-50"
         style={{ backgroundColor: "rgb(107 114 128 / var(--tw-bg-opacity))" }}
+        disabled={postquoteloading}
       />
 
-      <div className="flex items-center justify-center mt-10">
+      <div className="flex items-center justify-center mt-10" >
         <div
           className="bg-white p-5 max-w-screen-lg w-full h-full overflow-y-auto"
           style={{
@@ -129,7 +133,7 @@ function PostQuote() {
             // boxShadow: "1px 2px 18px aliceblue",
           }}
         >
-          <Listbox value={selected} onChange={setSelected}>
+          <Listbox value={selected} onChange={setSelected} disabled={postquoteloading}>
             {({ open }) => (
               <>
                 <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">
@@ -211,6 +215,7 @@ function PostQuote() {
                 className="block w-full bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-md resize-none"
                 rows="4"
                 onChange={(event) => setValue(event)}
+                disabled={postquoteloading}
               ></textarea>
             </div>
 
@@ -218,21 +223,26 @@ function PostQuote() {
             <div className="flex w-full items-end justify-end">
               <div className="flex items-center gap-2 ">
                 <button
+                disabled={postquoteloading}
                   onClick={closeDialog}
                   // inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto
-                  class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600  mt-2"
+                  class={`rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600  mt-2 ${
+                     postquoteloading
+                      ? "bg-red-400 cursor-not-allowed"
+                      : "bg-red-600 hover:bg-red-500"
+                  }`}
                 >
                   Close
                 </button>
                 <button
                   onClick={postQuote}
                   type="submit"
-                  disabled={!quote || quote?.trim().split(" ").length < 2}
+                  disabled={!quote || quote?.trim().split(" ").length < 2 || postquoteloading}
                   class={`rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm mt-2 disabled:opacity-50 ${
-                    !quote || quote?.trim().split(" ").length < 2
+                    !quote || quote?.trim().split(" ").length < 2 || postquoteloading
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-indigo-600 hover:bg-indigo-500"
-                  }`}
+                  }`} 
                 >
                   Quote
                 </button>

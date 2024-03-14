@@ -27,6 +27,9 @@ function Login() {
       .then((response) => {
         if (!response?.ok) {
           let message = "Server Error";
+          if (response.status === 400) {
+            message = "Invalid credentials.";
+          }
           if (response.status === 402) {
             message = "Invalid User.";
           }
