@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/quoteyourlife-UI/static/css/main.de57374b.css",
-    "main.js": "/quoteyourlife-UI/static/js/main.8fbd7456.js",
+    "main.css": "/quoteyourlife-UI/static/css/main.0d440ad7.css",
+    "main.js": "/quoteyourlife-UI/static/js/main.92518e95.js",
     "static/js/787.78e11b5a.chunk.js": "/quoteyourlife-UI/static/js/787.78e11b5a.chunk.js",
     "static/media/book.jpg": "/quoteyourlife-UI/static/media/book.f41cc4f5c58c31a09b4e.jpg",
     "static/media/Oswald-VariableFont_wght.ttf": "/quoteyourlife-UI/static/media/Oswald-VariableFont_wght.7cecd0da606d25b0905d.ttf",
     "static/media/logo.svg": "/quoteyourlife-UI/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/quoteyourlife-UI/index.html",
-    "main.de57374b.css.map": "/quoteyourlife-UI/static/css/main.de57374b.css.map",
-    "main.8fbd7456.js.map": "/quoteyourlife-UI/static/js/main.8fbd7456.js.map",
+    "main.0d440ad7.css.map": "/quoteyourlife-UI/static/css/main.0d440ad7.css.map",
+    "main.92518e95.js.map": "/quoteyourlife-UI/static/js/main.92518e95.js.map",
     "787.78e11b5a.chunk.js.map": "/quoteyourlife-UI/static/js/787.78e11b5a.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.de57374b.css",
-    "static/js/main.8fbd7456.js"
+    "static/css/main.0d440ad7.css",
+    "static/js/main.92518e95.js"
   ]
 }
