@@ -19,11 +19,13 @@ import {
 } from "../../statemange/postquote";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { QUOTE_TYPE } from "../../constants/contants";
-
+import Filter from 'bad-words';
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 function PostQuote() {
+  const filter = new Filter();
+
   const { postquoteloading } = useSelector((state) => state.postquote);
   const [quote, setQuote] = useState("");
   const { currentdialog, updateValue, currentNotification, openNotification } =
@@ -53,6 +55,15 @@ function PostQuote() {
 
   const dispatch = useDispatch();
   const postQuote = () => {
+    const isAdultContent = filter.isProfane(quote);
+    if(isAdultContent)
+    {
+      openNotification({
+        type: "error",
+        message: "Quote contains bad words!",
+      });
+      return
+    }
     dispatch(resetData());
     dispatch(startLoading());
 

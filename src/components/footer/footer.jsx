@@ -34,10 +34,13 @@ function Footer(prop) {
           <a href="https://shivrajmp.github.io/myApp/" target="_blank">
             <span className="clickme_">Simple Angular (Typescript)</span>
           </a>
+          <a href="https://shivrajmp.github.io/cinemanima" target="_blank">
+            <span className="clickme_">React Application - Cinemanima</span>
+          </a>
         </div>
       </div>
       <div class="copyright">
-        &copy; <span id="currentYear">{currentYear}</span> Cinemanima
+        &copy; <span id="currentYear">{currentYear}</span> Quote Your Life
       </div>
     </footer>
   );
