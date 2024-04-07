@@ -1,7 +1,15 @@
 import logo from "./logo.svg";
 import "./App.css";
 import Footer from "./components/footer/footer";
-import { useContext, useEffect, useRef, useState } from "react";
+import React from "react";
+
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import Body from "./components/body/body";
 // import Footer from "./components/footer/footer";
 import Filter from "bad-words";
@@ -30,8 +38,20 @@ import { ToastContainer, toast } from "react-toastify";
 import { resetData } from "./statemange/registerslice";
 import { formatDateDifference } from "./features/dateformatter/dateformat";
 import { Avatar } from "@mui/material";
+import { DeleteIcon } from "@mui/icons-material/Delete";
+import Button from "@mui/material/Button";
 import UserProfileIcon from "./components/extra/avatar";
+import ProfileImage from "./components/extra/profile";
+import TrashIconButton from "./components/extra/trashIcon";
 import MessageNotification from "./components/notifications/notification";
+import {
+  deleteApiError,
+  deleteApiSuccess,
+  deleteResetData,
+  deleteStartLoading,
+  deleteStopLoading,
+} from "./statemange/deleteslice";
+
 const userNavigation = [
   { name: "Your Profile", href: "#" },
   { name: "Sign out", id: "logout", href: "#" },
@@ -50,19 +70,32 @@ function App() {
   const { postquoteloading, postquotedata, postquoteerror } = useSelector(
     (state) => state.postquote
   );
-  const { currentdialog, updateValue } = useContext(MyContext);
-  const fetchList =()=>{
-    dispatch(startLoading());
+  const { deleteloading, deletedata, deleteerror } = useSelector(
+    (state) => state.deletequote
+  );
+  const { currentdialog, updateValue, currentNotification, openNotification } =
+    useContext(MyContext);
+  const fetchList = (loader = true) => {
+    if (loader) dispatch(startLoading());
     fetch("https://quote-your-life.onrender.com/quotes/list")
       .then((response) => response.json())
       .then((json) => dispatch(apiSuccess(json)))
       .catch((error) => dispatch(apiError(error)));
-  }
-  useEffect(() => {
-    fetchList();
-  }, [dispatch,postquotedata]);
+  };
 
-  
+  // useLayoutEffect(() => {
+  //   fetchList();
+  // }, [dispatch]);
+
+  const [currentID, setcurrentID] = useState('');
+  useLayoutEffect(() => {
+    fetchList();
+  }, [dispatch]);
+
+  useLayoutEffect(() => {
+    fetchList(false);
+  }, [postquotedata]);
+
   const handleItemClick = (itemName) => {
     if (itemName === "login") {
       updateValue("login");
@@ -78,7 +111,6 @@ function App() {
     updateValue(isAuthenticated ? "post" : "login");
   };
   useEffect(() => {
-    console.log(currentdialog, "currentdialog");
     setIsOpen(false);
   }, [currentdialog]);
 
@@ -87,13 +119,65 @@ function App() {
   const handleLikeClick = () => {
     setLiked(!liked);
   };
+
+  const deleteQuote = (id) => {
+    setcurrentID(id)
+    dispatch(deleteResetData());
+    dispatch(deleteStartLoading());
+
+    const userInfo = authService.getUser();
+    const token = authService.getToken();
+    fetch("https://quote-your-life.onrender.com/quotes/delete", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer " + token,
+        userId: userInfo?.id,
+      },
+      body: JSON.stringify([id]),
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          fetchList(false);
+          openNotification({
+            type: "success",
+            message: "Quote deleted successfully.",
+          });
+        }
+        if (!response?.ok) {
+          let message = "Server Error.";
+          if (response.status === 401) {
+            authService.logout();
+            message = "Token has expired.";
+          }
+          openNotification({
+            type: "error",
+            message: message,
+          });
+          dispatch(deleteApiError(message));
+        }
+        return response.json();
+      })
+      .then((json) => {
+        dispatch(deleteApiSuccess(json));
+        updateValue("");
+      })
+      .catch((error) => {
+        dispatch(deleteApiError(error));
+      })
+      .finally(() => {
+        dispatch(deleteStopLoading()); // Set formSubmitting back to false after completing form submission
+
+        setcurrentID('')
+      });
+  };
+
   useEffect(() => {
     const token = authService.getToken();
     if (!token) {
       localStorage.clear();
     }
   });
-
   useEffect(() => {
     if (!userinfo?.id && currentdialog === "") {
       const timer = setTimeout(() => {
@@ -146,7 +230,12 @@ function App() {
                                 <span className="sr-only">Open user menu</span>
                                 {userinfo?.id ? (
                                   <div className="h-10 w-10 rounded-full bg-white">
-                                    <UserProfileIcon size={40} />
+                                    {/* <UserProfileIcon size={40} /> */}
+                                    <ProfileImage
+                                      h={40}
+                                      w={40}
+                                      name={userinfo?.username}
+                                    />
                                   </div>
                                 ) : (
                                   <UserIcon className="h-6 w-6 white text-white " />
@@ -209,7 +298,7 @@ function App() {
                     <button
                       onClick={() => handleItemClick("login")}
                       type="submit"
-                      style={{margin:'0'}}
+                      style={{ margin: "0" }}
                       class="flex justify-center items-center m-0 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600  mt-2"
                     >
                       Login
@@ -229,7 +318,7 @@ function App() {
                         alt=""
                       /> */}
                       <div className="h-10 w-10 rounded-full bg-white">
-                        <UserProfileIcon size={40} />
+                        <ProfileImage h={40} w={40} name={userinfo?.username} />
                       </div>
                     </div>
                     <div className="ml-3">
@@ -285,23 +374,94 @@ function App() {
         <main>
           <div className="flex justify-center  min-h-screen">
             <div className="max-w-md  p-4 space-y-4 w-full min-w-[50%]">
-              {data && data.length ? (
+              {!loading ? (
+                // console.log(data)
                 (data || []).map((quote) => (
-                  <div>
+                  <div key={quote.id}>
                     {/* <img src={"person.avatar"} alt="" className="h-5 w-5 flex-shrink-0 rounded-full" /> */}
-                    <div style={{ display: "flex" ,marginBottom:'5px',columnGap:'5px'}}>
-                      <span className="mb-2 w-10 flex-shrink-0 rounded-full " style={{display:'flex',justifyContent:'center' ,alignItems:'center', border:'2px solid'}}>
+                    <div className="flex justify-between items-center">
+                      <div
+                        style={{
+                          display: "flex",
+                          marginBottom: "5px",
+                          columnGap: "5px",
+                        }}
+                      >
+                        {/* <span
+                        className="mb-2 w-10 flex-shrink-0 rounded-full "
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          border: "2px solid",
+                        }}
+                      >
                         <img
                           className="h-8 w-8"
                           src={`${process.env.PUBLIC_URL}/cabbage.png`}
                           alt="Your Company"
                         />
-                      </span>
-                      <span >
-                        <p className="font-medium ">{`${quote?.username}`}</p>
-                        <span style={{ display: "flex" ,columnGap:'10px'}}>{quote?.quote_category}   <p className="text-gray-500 ">{formatDateDifference(quote?.created_at)}</p></span> 
-                      
-                      </span>
+                        <ProfileImage name={quote?.username} />
+                      </span> */}
+                        <span className="mt-1">
+                          <ProfileImage w={35} h={35} name={quote?.username} />
+                        </span>
+                        <span>
+                          <p className="font-medium ">{`${quote?.username}`}</p>
+                          <span style={{ display: "flex", columnGap: "10px" }}>
+                            {quote?.quote_category}{" "}
+                            <p className="text-gray-500 ">
+                              {formatDateDifference(quote?.created_at)}
+                            </p>
+                          </span>
+                        </span>
+                      </div>
+                      {userinfo?.id === quote.user_id ? (
+                        <div
+                          className="relative"
+                          title="Delete"
+                          onClick={() => {
+                            deleteQuote(quote.id);
+                          }}
+                        >
+                          {deleteloading &&  currentID === quote.id? (
+                            <svg
+                            className="animate-spin h-5 w-5 mr-3"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 4.418 3.582 8 8 8v-4c-2.291 0-4.414-.784-6.122-2.209l1.51-1.51c1.197 1.16 2.754 1.719 4.379 1.719 3.309 0 6-2.691 6-6s-2.691-6-6-6c-2.021 0-3.822.998-4.938 2.533l-1.502-1.502A7.96 7.96 0 0112 4v4c4.418 0 8-3.582 8-8h-4a3.967 3.967 0 00-3.013 1.367l1.51 1.51A5.958 5.958 0 0118 8c3.309 0 6 2.691 6 6s-2.691 6-6 6a5.944 5.944 0 01-3.717-1.311l-1.511 1.511A7.963 7.963 0 0112 20h4c0-4.418-3.582-8-8-8z"
+                            ></path>
+                          </svg>
+                            
+                          ) : (
+                            <svg
+                              viewBox="0 0 24 24"
+                              className="h-5 w-5 text-red-500 hover:text-red-700 cursor-pointer"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M3 6l1 13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2l1-13M9 2l1 1M12 2l1-1M15 2l1 1" />
+                              {/* Cross */}
+                              <path d="M6 18l12-12" strokeWidth="1.5" />
+                              <path d="M6 6l12 12" strokeWidth="1.5" />
+                            </svg>
+                          )}
+                        </div>
+                      ) : null}
                     </div>
                     {/* <p className="text-gray-500 ">
                       {`${
@@ -334,22 +494,31 @@ function App() {
                           <span>{quote?.likes}</span>
                         </span>
                       </div> */}
-                
                     </div>
-                    <hr class=" h-0.5 mx-auto my-10 bg-gray-50 border-0 rounded md:my-2 mx-10 dark:bg-gray-300"/>
+                    <hr class=" h-0.5 mx-auto my-10 bg-gray-50 border-0 rounded md:my-2 mx-10 dark:bg-gray-300" />
                   </div>
                 ))
               ) : (
-                <ContentLoader
-                  speed={2}
-                  width={"100%"}
-                  height={460}
-                  viewBox="0 0 100% 460"
-                  backgroundColor="#f3f3f3"
-                  foregroundColor="#ecebeb"
-                >
-                  <rect x="0" y="5" rx="2" width="100%" height="460" />
-                </ContentLoader>
+                // <ContentLoader
+                //   speed={2}
+                //   width={"100%"}
+                //   height={460}
+                //   viewBox="0 0 100% 460"
+                //   backgroundColor="#f3f3f3"
+                //   foregroundColor="#ecebeb"
+                // >
+
+                //   <rect x="0" y="5" rx="2" width="100%" height="460" />
+                // </ContentLoader>
+                <>
+                  <h1 className="flex justify-center font-bold">
+                    Using limited capacity server : Expect delay in response
+                  </h1>
+                  <img
+                    src={`${process.env.PUBLIC_URL}/car.gif`}
+                    alt="Your Company"
+                  />
+                </>
               )}
             </div>
           </div>
@@ -389,10 +558,13 @@ function App() {
                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
-                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg adada w-full" style={{width:'100% '}}>
+                <Dialog.Panel
+                  className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg adada w-full"
+                  style={{ width: "100% " }}
+                >
                   <>
                     {currentdialog === "login" ? (
-                      <Login  style={{width:'100% !important'}}/>
+                      <Login style={{ width: "100% !important" }} />
                     ) : currentdialog === "register" ? (
                       <Register />
                     ) : null}
